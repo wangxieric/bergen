@@ -15,7 +15,7 @@ import urllib.request
 import json
 import requests  
 from functools import partial
-
+cache_dir = "/mnt/parscratch/users/ac1xwa/huggingface/datasets"
 
 # Base class that every processor interhits from 
 class Processor(object):
@@ -829,7 +829,7 @@ class KILT100w(Processor):
 
     def process(self):
         hf_name = 'kilt_wikipedia'
-        dataset = datasets.load_dataset(hf_name, num_proc=self.num_proc, trust_remote_code=True)[self.split]
+        dataset = datasets.load_dataset(hf_name, num_proc=self.num_proc, trust_remote_code=True, cache_dir=cache_dir)[self.split]
 
         def map_100w(sample, num_words=100):
             wiki_id = sample['wikipedia_id']
