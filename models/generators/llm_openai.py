@@ -32,15 +32,30 @@ class OpenAI(Generator):
 
     def generate(self, messages):
         responses=[]
+        confidence_min = []
+        confidence_avg = []
         for msg in messages:
-            response = self.client.chat.completions.create( messages=msg, model=self.model_name)
+            response = self.client.chat.completions.create(messages=msg, model=self.model_name, logprobs=1)
             responses.append(response.choices[0].message.content)
             t,p,c = self.openai_api_calculate_cost(response.usage)
             self.total_cost += t
             self.prompt_cost += p 
-            self.completion_cost += c 
+            self.completion_cost += c
+            min_confidence = 0.0 # 0.0 refers to 100% confidence
+            try:
+                confidence = []
+                for token in response.choices[0].logprobs.content:
+                    confidence.append(token.logprob)
+                    if token.logprob < min_confidence:
+                        min_confidence = token.logprob
+                confidence_min.append(min_confidence)
+                confidence_avg.append(sum(confidence)/(len(confidence) * 1.0))
+            except:
+                print("Error in calculating confidence")
+                confidence_min.append(0.0)
+                confidence_avg.append(0.0)
 
-        return responses
+        return responses, confidence_min, confidence_avg
 
 
     def openai_api_calculate_cost(self,usage):

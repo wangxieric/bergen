@@ -152,9 +152,16 @@ class LLM(Generator):
                 pad_token_id=self.tokenizer.pad_token_id,
                 retrieval_embeds = doc_embeds,
                 use_cache=False,
+                output_scores=True,
+                return_dict_in_generate=True,
             )
+        logits = generated_output.scores
+        # get the minimum value of the logits
+        min_logits = torch.min(logits, dim=1)
+        avg_logits = torch.mean(logits, dim=1)
+
         decoded = self.tokenizer.batch_decode(generated_output, skip_special_tokens=True)
-        return decoded
+        return decoded, min_logits, avg_logits
 
 
 

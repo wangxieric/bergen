@@ -78,6 +78,7 @@ class Projector(nn.Module):
     
     def forward(self,context_embedding):
         return self.projector(context_embedding)
+    
 ## compatible with normal Mistral model
 class XMistralForCausalLM(MistralForCausalLM):
     def __init__(self,config):

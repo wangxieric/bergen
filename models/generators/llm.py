@@ -123,18 +123,24 @@ class LLM(Generator):
     def generate(self, instr_tokenized):
         input_ids = instr_tokenized['input_ids'].to("cuda")
         attention_mask = instr_tokenized['attention_mask'].to("cuda")
-        output_ids = self.model.generate(
+        output = self.model.generate(
             input_ids,
             attention_mask=attention_mask,
             do_sample=False,
             max_new_tokens=self.max_new_tokens,
+            return_dict_in_generate=True, 
+            output_logits=True
         )
+        logits = output.logits
+        logits_min = torch.min(logits, dim=1)
+        logits_avg = torch.average(logits, dim=1)
 
+        output_ids = output.sequences
         prompt_len = instr_tokenized['input_ids'].size(1)
         generated_ids = output_ids[:, prompt_len:]
         decoded = self.tokenizer.batch_decode(generated_ids, skip_special_tokens=True)
 
-        return decoded
+        return decoded, logits_min, logits_avg
 
     def collate_fn(self, examples, eval=False, **kwargs):
         ignore_index = -100
