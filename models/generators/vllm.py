@@ -41,7 +41,7 @@ class LLM(Generator):
             self.model = vllm(model=self.model_name,tensor_parallel_size=torch.cuda.device_count(),dtype=torch.float16,gpu_memory_utilization=0.9,max_model_len=self.max_length,enforce_eager=True,kv_cache_dtype="fp8")        
         else:
             self.model = vllm(model=self.model_name,tensor_parallel_size=torch.cuda.device_count(),quantization=self.quantization)
-        self.sampling_params =  SamplingParams(temperature=1,max_tokens=max_new_tokens, best_of=1, top_p=1, top_k=-1, log_probs=1)
+        self.sampling_params =  SamplingParams(temperature=1,max_tokens=max_new_tokens, best_of=1, top_p=1, top_k=-1, logprobs=1)
 
 
 
@@ -53,7 +53,16 @@ class LLM(Generator):
     def generate(self, instr_tokenized):
         outputs = self.model.generate(instr_tokenized, self.sampling_params)
         decoded = [output.outputs[0].text for output in outputs]
-        return decoded
+        min_logits = []
+        avg_logits = []
+        for output in outputs:
+            for logprob in output.outputs[0].logprobs:
+                logits = []
+                for _, logprob_obj in logprob.items():
+                    logits.append(logprob_obj.logprob)
+                min_logits.append(min(logits))
+                avg_logits.append(sum(logits) / len(logits))
+        return decoded, min_logits, avg_logits
 
     def collate_fn(self, examples, eval=False, **kwargs):
         ignore_index = -100

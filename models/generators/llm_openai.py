@@ -35,7 +35,7 @@ class OpenAI(Generator):
         confidence_min = []
         confidence_avg = []
         for msg in messages:
-            response = self.client.chat.completions.create(messages=msg, model=self.model_name, logprobs=1)
+            response = self.client.chat.completions.create(messages=msg, model=self.model_name, logprobs=True)
             responses.append(response.choices[0].message.content)
             t,p,c = self.openai_api_calculate_cost(response.usage)
             self.total_cost += t
