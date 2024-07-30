@@ -129,17 +129,22 @@ class LLM(Generator):
             do_sample=False,
             max_new_tokens=self.max_new_tokens,
             return_dict_in_generate=True, 
-            output_logits=True
+            output_scores=True
         )
-        logits = output.logits
-        logits_min = torch.min(logits, dim=1)
-        logits_avg = torch.average(logits, dim=1)
-
         output_ids = output.sequences
         prompt_len = instr_tokenized['input_ids'].size(1)
         generated_ids = output_ids[:, prompt_len:]
         decoded = self.tokenizer.batch_decode(generated_ids, skip_special_tokens=True)
-
+        logits_per_token = []
+        for i in range(generated_ids.size(0)):
+            logits_for_example = []
+            for j in range(len(generated_ids[i])):
+                token_id = generated_ids[i, j].item()
+                token_logit = output.scores[j][i, token_id].item()  # Extract the logit for the generated token
+                logits_for_example.append(token_logit)
+            logits_per_token.append(logits_for_example)
+        logits_min = [min(logits) for logits in logits_per_token]
+        logits_avg = [sum(logits) / len(logits) for logits in logits_per_token]
         return decoded, logits_min, logits_avg
 
     def collate_fn(self, examples, eval=False, **kwargs):
