@@ -158,8 +158,8 @@ def print_generate_out(queries, instructions, responses, logits_min, logits_avg,
         print(responses[i])
         print()
         print("Logits:")
-        print('Min:', logits_min[i])
-        print('Avg:', logits_avg[i])
+        print('Min:', logits_min[i].cpu().numpy())
+        print('Avg:', logits_avg[i].cpu().numpy())
         print('Label(s):')
         print(labels[i])
         if ranking_labels[i] != None:
@@ -200,8 +200,8 @@ def write_generated(out_folder, out_filename, query_ids, questions, instructions
         jsonl = {}
         jsonl['q_id'] = q_id
         jsonl['response'] = response
-        jsonl['logits_min'] = logits_min
-        jsonl['logits_avg'] = logits_avg
+        jsonl['logits_min'] = logits_min.cpu().numpy()
+        jsonl['logits_avg'] = logits_avg.cpu().numpy()
         jsonl['instruction'] = instruction
         jsonl['label'] = label
         jsonl['question'] = question
