@@ -53,16 +53,18 @@ class LLM(Generator):
     def generate(self, instr_tokenized):
         outputs = self.model.generate(instr_tokenized, self.sampling_params)
         decoded = [output.outputs[0].text for output in outputs]
-        min_logits = []
-        avg_logits = []
+        logits_min = []
+        logits_avg = []
         for output in outputs:
             for logprob in output.outputs[0].logprobs:
                 logits = []
                 for _, logprob_obj in logprob.items():
                     logits.append(logprob_obj.logprob)
-                min_logits.append(min(logits))
-                avg_logits.append(sum(logits) / len(logits))
-        return decoded, min_logits, avg_logits
+                logits_min.append(min(logits))
+                logits_avg.append(sum(logits) / len(logits))
+        logits_min = torch.tensor(logits_min)
+        logits_avg = torch.tensor(logits_avg)
+        return decoded, logits_min, logits_avg
 
     def collate_fn(self, examples, eval=False, **kwargs):
         ignore_index = -100

@@ -143,7 +143,7 @@ def prepare_dataset_from_ids(dataset, q_ids, d_ids, multi_doc=False, query_embed
 
     return datasets.Dataset.from_dict(dataset_dict)
 
-def print_generate_out(queries, instructions, responses, query_ids, labels, ranking_labels, n=5):
+def print_generate_out(queries, instructions, responses, logits_min, logits_avg, query_ids, labels, ranking_labels, n=5):
     rand = random.sample(range(len(query_ids)), n)
     for i in rand:
         print('_'*50)
@@ -156,6 +156,10 @@ def print_generate_out(queries, instructions, responses, query_ids, labels, rank
         print()
         print('LLM Answer:')
         print(responses[i])
+        print()
+        print("Logits:")
+        print('Min:', logits_min[i])
+        print('Avg:', logits_avg[i])
         print('Label(s):')
         print(labels[i])
         if ranking_labels[i] != None:
@@ -190,12 +194,14 @@ def write_trec(fname, q_ids, d_ids, scores):
                 fout.write(f'{q_id}\tq0\t{d_id}\t{rank+1}\t{score}\trun\n')
 
 
-def write_generated(out_folder, out_filename, query_ids, questions, instructions, responses, labels, ranking_labels):
+def write_generated(out_folder, out_filename, query_ids, questions, instructions, responses, logits_min, logits_avg, labels, ranking_labels):
     jsonl_list = list()
-    for i, (q_id, question, response, instruction, label, ranking_label) in enumerate(zip(query_ids, questions, responses, instructions, labels, ranking_labels)):
+    for _, (q_id, question, response, logits_min, logits_avg, instruction, label, ranking_label) in enumerate(zip(query_ids, questions, responses, logits_min, logits_avg, instructions, labels, ranking_labels)):
         jsonl = {}
         jsonl['q_id'] = q_id
         jsonl['response'] = response
+        jsonl['logits_min'] = logits_min
+        jsonl['logits_avg'] = logits_avg
         jsonl['instruction'] = instruction
         jsonl['label'] = label
         jsonl['question'] = question

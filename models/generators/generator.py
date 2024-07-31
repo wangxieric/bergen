@@ -40,9 +40,9 @@ class Generator(ABC):
             queries += data_dict['query']
             ranking_labels += data_dict['ranking_label']
             instructions += instruction
-            generated_response = self.generate(data_dict['model_input'])
+            generated_response, logits_min, logits_avg = self.generate(data_dict['model_input'])
             responses += generated_response
-        return query_ids, queries, instructions, responses, labels, ranking_labels
+        return query_ids, queries, instructions, responses, logits_min, logits_avg, labels, ranking_labels
 
 
     # only required for training

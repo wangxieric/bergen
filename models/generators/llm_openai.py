@@ -6,6 +6,7 @@ CC BY-NC-SA 4.0 license
 
 import openai
 import os
+import torch
 from models.generators.generator import Generator
 
 
@@ -32,8 +33,8 @@ class OpenAI(Generator):
 
     def generate(self, messages):
         responses=[]
-        confidence_min = []
-        confidence_avg = []
+        logits_min = []
+        logits_avg = []
         for msg in messages:
             response = self.client.chat.completions.create(messages=msg, model=self.model_name, logprobs=True)
             responses.append(response.choices[0].message.content)
@@ -41,21 +42,22 @@ class OpenAI(Generator):
             self.total_cost += t
             self.prompt_cost += p 
             self.completion_cost += c
-            min_confidence = 0.0 # 0.0 refers to 100% confidence
+            min_logit = 0.0 # 0.0 refers to 100% confidence
             try:
-                confidence = []
+                logits = []
                 for token in response.choices[0].logprobs.content:
-                    confidence.append(token.logprob)
-                    if token.logprob < min_confidence:
-                        min_confidence = token.logprob
-                confidence_min.append(min_confidence)
-                confidence_avg.append(sum(confidence)/(len(confidence) * 1.0))
+                    logits.append(token.logprob)
+                    if token.logprob < min_logit:
+                        min_logit = token.logprob
+                logits_min.append(min_logit)
+                logits_avg.append(sum(logits)/(len(logits) * 1.0))
             except:
                 print("Error in calculating confidence")
-                confidence_min.append(0.0)
-                confidence_avg.append(0.0)
-
-        return responses, confidence_min, confidence_avg
+                logits_min.append(0.0)
+                logits_avg.append(0.0)
+        logits_min = torch.tensor(logits_min)
+        logits_avg = torch.tensor(logits_avg)
+        return responses, logits_min, logits_avg
 
 
     def openai_api_calculate_cost(self,usage):

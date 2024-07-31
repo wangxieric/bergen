@@ -346,7 +346,7 @@ class RAG:
             )
 
         generation_start = time.time()
-        query_ids, questions, instructions, predictions, references, ranking_labels  = self.generator.eval(gen_dataset)
+        query_ids, questions, instructions, predictions, logits_min, logits_avg, references, ranking_labels  = self.generator.eval(gen_dataset)
         generation_time = time.time() - generation_start
         write_generated(
             self.experiment_folder,
@@ -354,7 +354,9 @@ class RAG:
             query_ids, 
             questions,
             instructions, 
-            predictions, 
+            predictions,
+            logits_min,
+            logits_avg, 
             references, 
             ranking_labels
         )
@@ -363,6 +365,8 @@ class RAG:
             questions,
             instructions,
             predictions,
+            logits_min, 
+            logits_avg,
             query_ids, 
             references,
             ranking_labels,

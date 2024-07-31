@@ -157,11 +157,11 @@ class LLM(Generator):
             )
         logits = generated_output.scores
         # get the minimum value of the logits
-        min_logits = torch.min(logits, dim=1)
-        avg_logits = torch.mean(logits, dim=1)
+        logits_min = torch.min(logits, dim=1)
+        logits_avg = torch.mean(logits, dim=1)
 
         decoded = self.tokenizer.batch_decode(generated_output, skip_special_tokens=True)
-        return decoded, min_logits, avg_logits
+        return decoded, logits_min, logits_avg
 
 
 

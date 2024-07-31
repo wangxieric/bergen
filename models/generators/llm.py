@@ -143,8 +143,8 @@ class LLM(Generator):
                 token_logit = output.scores[j][i, token_id].item()  # Extract the logit for the generated token
                 logits_for_example.append(token_logit)
             logits_per_token.append(logits_for_example)
-        logits_min = [min(logits) for logits in logits_per_token]
-        logits_avg = [sum(logits) / len(logits) for logits in logits_per_token]
+        logits_min = torch.tensor([min(logits) for logits in logits_per_token])
+        logits_avg = torch.tensor([sum(logits) / len(logits) for logits in logits_per_token])
         return decoded, logits_min, logits_avg
 
     def collate_fn(self, examples, eval=False, **kwargs):
