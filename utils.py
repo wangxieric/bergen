@@ -200,8 +200,8 @@ def write_generated(out_folder, out_filename, query_ids, questions, instructions
         jsonl = {}
         jsonl['q_id'] = q_id
         jsonl['response'] = response
-        jsonl['logits_min'] = logits_min.cpu().numpy()
-        jsonl['logits_avg'] = logits_avg.cpu().numpy()
+        jsonl['logits_min'] = logits_min.cpu().numpy().tolist()
+        jsonl['logits_avg'] = logits_avg.cpu().numpy().tolist()
         jsonl['instruction'] = instruction
         jsonl['label'] = label
         jsonl['question'] = question
