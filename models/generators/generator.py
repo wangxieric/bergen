@@ -30,7 +30,8 @@ class Generator(ABC):
         else:
             dataloader = DataLoader(dataset, batch_size=self.batch_size, collate_fn=lambda l: self.collate_fn(l, eval=True), num_workers=4)
         
-        responses, instructions, query_ids, queries, labels, ranking_labels = list(), list(), list(), list(), list(), list()
+        responses, logits_min_l, logits_avg_l, instructions, query_ids, queries, labels, ranking_labels = list(), list(), list(), list(), list(), list(), list(), list()
+
         for data_dict in tqdm(dataloader, desc='Generating'):
             id_ = data_dict['q_id']
             instruction = data_dict['instruction']
@@ -42,7 +43,9 @@ class Generator(ABC):
             instructions += instruction
             generated_response, logits_min, logits_avg = self.generate(data_dict['model_input'])
             responses += generated_response
-        return query_ids, queries, instructions, responses, logits_min, logits_avg, labels, ranking_labels
+            logits_min_l += logits_min
+            logits_avg_l += logits_avg
+        return query_ids, queries, instructions, responses, logits_min_l, logits_avg_l, labels, ranking_labels
 
 
     # only required for training
