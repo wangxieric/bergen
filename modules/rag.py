@@ -175,7 +175,7 @@ class RAG:
 
         # generate
         if self.generator !=  None:
-            questions, _, predictions, references = self.generate(
+            questions, _, predictions, _, _, references = self.generate(
                 dataset, 
                 dataset_split,
                 query_ids, 
