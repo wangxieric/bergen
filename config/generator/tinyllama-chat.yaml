@@ -6,4 +6,5 @@ init_args:
   quantization: "int4"
   attn_implementation: 'sdpa'
   batch_size: 1
+  retrieval_oracle: True
 

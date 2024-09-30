@@ -18,7 +18,7 @@ from hydra.utils import instantiate
 from utils import (
     eval_retrieval_kilt, init_experiment, move_finished_experiment,
     write_trec, prepare_dataset_from_ids, load_trec,
-    print_generate_out, print_rag_model,
+    print_generate_out, print_rag_model, get_qrel_ranking_filename,
     write_generated, write_dict, get_by_id, get_index_path, get_query_generation_filename,
     get_reranking_filename, format_time, get_ranking_filename, get_finished_experiment_name
 )
@@ -130,6 +130,7 @@ class RAG:
 
         # Hydra way of instantiating generator object defined in config.
         self.generator = instantiate(generator_config.init_args, prompt=prompt) if generator_config != None else None
+        self.oracle_retrieval = generator_config.oracle_retrieval if generator_config != None else False
 
         self.query_generator = GenerateQueries(**query_generator_config) if query_generator_config != None else None
         
@@ -334,8 +335,24 @@ class RAG:
                  dataset_split, 
                  query_ids, 
                  doc_ids,
+                 oracal_retrieval=False,
                  ):
-        doc_ids = [doc_ids_q[:self.generation_top_k] for doc_ids_q in doc_ids] if doc_ids != None else doc_ids 
+        if oracal_retrieval:
+            qrels_folder = 'qrels'
+            dataset = self.datasets[dataset_split]
+            query_dataset_name = self.datasets[dataset_split]['query'].name
+            debug = False
+            qrels_file = get_qrel_ranking_filename(qrels_folder, query_dataset_name, dataset_split, debug)
+            qrel = json.load(open(qrels_file))
+            if "doc_dataset_name" in qrel:
+                qrel.pop("doc_dataset_name")
+            
+            # get the doc_ids according to the qrel and query_ids
+            doc_ids = []
+            for q_id in query_ids:
+                doc_ids.append(list(qrel[q_id].keys()))
+        else:
+            doc_ids = [doc_ids_q[:self.generation_top_k] for doc_ids_q in doc_ids] if doc_ids != None else doc_ids 
 
         gen_dataset = prepare_dataset_from_ids(
             dataset, 
