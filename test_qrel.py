@@ -12,6 +12,7 @@ if "doc_dataset_name" in qrel:
     qrel.pop("doc_dataset_name")
 
 doc_ids = list(qrel.keys())
+print(qrel[doc_ids[0]])
 for doc_id in doc_ids:
-    if qrel[doc_id].value == 0:
+    if qrel[doc_id].values == 0:
         print(doc_id)
