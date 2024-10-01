@@ -334,10 +334,10 @@ class RAG:
                  dataset, 
                  dataset_split, 
                  query_ids, 
-                 doc_ids,
-                 oracal_retrieval=False,
+                 doc_ids
                  ):
-        if oracal_retrieval:
+        print("oracle retrieval: ", self.oracle_retrieval)
+        if self.oracle_retrieval:
             qrels_folder = 'qrels'
             dataset = self.datasets[dataset_split]
             query_dataset_name = self.datasets[dataset_split]['query'].name
