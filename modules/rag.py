@@ -355,7 +355,11 @@ class RAG:
             # get the doc_ids according to the qrel and query_ids
             doc_ids = []
             for q_id in query_ids:
-                doc_ids.append(list(qrel[q_id].keys()))
+                if q_id in qrel:
+                    doc_ids.append(list(qrel[q_id].keys()))
+                else:
+                    print(q_id, " not in qrel")
+                    doc_ids.append([])
         else:
             doc_ids = [doc_ids_q[:self.generation_top_k] for doc_ids_q in doc_ids] if doc_ids != None else doc_ids 
 
