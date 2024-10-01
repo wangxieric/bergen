@@ -181,6 +181,7 @@ class RAG:
             print("Generating... [test]")
             questions, _, predictions, references = self.generate(
                 dataset, 
+                query_dataset_name,
                 dataset_split,
                 query_ids, 
                 doc_ids
@@ -335,6 +336,7 @@ class RAG:
 
     def generate(self, 
                  dataset, 
+                 query_dataset_name,
                  dataset_split, 
                  query_ids, 
                  doc_ids
@@ -343,7 +345,6 @@ class RAG:
         if self.oracle_retrieval:
             qrels_folder = 'qrels'
             dataset = self.datasets[dataset_split]
-            query_dataset_name = self.datasets[dataset_split]['query'].name
             debug = False
             qrels_file = get_qrel_ranking_filename(qrels_folder, query_dataset_name, dataset_split, debug)
             qrel = json.load(open(qrels_file))
