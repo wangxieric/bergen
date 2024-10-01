@@ -346,6 +346,7 @@ class RAG:
             qrels_folder = 'qrels'
             dataset = self.datasets[dataset_split]
             debug = False
+            print("query_dataset information for qrel: ", query_dataset_name, dataset_split)
             qrels_file = get_qrel_ranking_filename(qrels_folder, query_dataset_name, dataset_split, debug)
             qrel = json.load(open(qrels_file))
             if "doc_dataset_name" in qrel:
