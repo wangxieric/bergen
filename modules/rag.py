@@ -341,6 +341,10 @@ class RAG:
                  query_ids, 
                  doc_ids
                  ):
+        with open("doc_ids_bm25.json", "w") as f:
+                json.dump(doc_ids, f)
+        with open("query_ids.json", "w") as f:
+                json.dump(query_ids, f)
         print("oracle retrieval: ", self.oracle_retrieval)
         if self.oracle_retrieval:
             qrels_folder = 'qrels'
@@ -360,6 +364,9 @@ class RAG:
                 else:
                     print(q_id, " not in qrel")
                     doc_ids.append([])
+            # save the doc_ids to local
+            with open("oracle_doc_ids.json", "w") as f:
+                json.dump(doc_ids, f)
         else:
             doc_ids = [doc_ids_q[:self.generation_top_k] for doc_ids_q in doc_ids] if doc_ids != None else doc_ids 
 
