@@ -132,7 +132,7 @@ class RAG:
         self.generator = instantiate(generator_config.init_args, prompt=prompt) if generator_config != None else None
         print("Generator: ", self.generator)
         # self.oracle_retrieval = generator_config.oracle_retrieval if generator_config != None else False
-        self.oracle_retrieval = True
+        self.generation_mode = 'random'
 
         self.query_generator = GenerateQueries(**query_generator_config) if query_generator_config != None else None
         
@@ -331,6 +331,7 @@ class RAG:
                 reranking=True, 
                 debug=self.debug
                 )
+            
         return query_ids, doc_ids, scores
 
 
@@ -341,12 +342,8 @@ class RAG:
                  query_ids, 
                  doc_ids
                  ):
-        with open("doc_ids_bm25.json", "w") as f:
-                json.dump(doc_ids, f)
-        with open("query_ids.json", "w") as f:
-                json.dump(query_ids, f)
         print("oracle retrieval: ", self.oracle_retrieval)
-        if self.oracle_retrieval:
+        if self.generation_mode == "oracle":
             qrels_folder = 'qrels'
             dataset = self.datasets[dataset_split]
             debug = False
@@ -365,9 +362,29 @@ class RAG:
                     print(q_id, " not in qrel")
                     doc_ids.append([])
             # save the doc_ids to local
-            with open("oracle_doc_ids.json", "w") as f:
-                json.dump(doc_ids, f)
-        else:
+            # with open("oracle_doc_ids.json", "w") as f:
+            #     json.dump(doc_ids, f)
+        elif self.generation_mode == "random":
+            qrels_folder = 'qrels'
+            dataset = self.datasets[dataset_split]
+            debug = False
+            print("query_dataset information for qrel: ", query_dataset_name, dataset_split)
+            qrels_file = get_qrel_ranking_filename(qrels_folder, query_dataset_name, dataset_split, debug)
+            qrel = json.load(open(qrels_file))
+            if "doc_dataset_name" in qrel:
+                qrel.pop("doc_dataset_name")
+            
+            all_doc_ids = []
+            for q_id in query_ids:
+                if q_id in qrel:
+                    all_doc_ids.extend(list(qrel[q_id].keys()))
+
+            # sample from all_doc_ids for each query
+            from random import sample
+            doc_ids = [sample(all_doc_ids, self.generation_top_k) for doc_ids_q in doc_ids] if doc_ids != None else doc_ids
+            
+
+        elif self.generation_mode == "retrieval":
             doc_ids = [doc_ids_q[:self.generation_top_k] for doc_ids_q in doc_ids] if doc_ids != None else doc_ids 
 
         gen_dataset = prepare_dataset_from_ids(
