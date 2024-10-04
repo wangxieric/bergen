@@ -342,7 +342,7 @@ class RAG:
                  query_ids, 
                  doc_ids
                  ):
-        print("oracle retrieval: ", self.oracle_retrieval)
+        print("Generation mode", self.generation_mode)
         if self.generation_mode == "oracle":
             qrels_folder = 'qrels'
             dataset = self.datasets[dataset_split]
