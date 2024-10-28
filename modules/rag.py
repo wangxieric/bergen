@@ -130,9 +130,9 @@ class RAG:
 
         # Hydra way of instantiating generator object defined in config.
         self.generator = instantiate(generator_config.init_args, prompt=prompt) if generator_config != None else None
-        print("Generator: ", self.generator)
+        # print("Generator: ", self.generator)
         # self.oracle_retrieval = generator_config.oracle_retrieval if generator_config != None else False
-        self.generation_mode = 'random'
+        self.generation_mode = 'retrieval'
 
         self.query_generator = GenerateQueries(**query_generator_config) if query_generator_config != None else None
         
