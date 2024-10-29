@@ -7,7 +7,7 @@ defaults:
     - generator: null
     - dataset: ??
     - train: null
-    - prompt: nq
+    - prompt: nq-v1
 
 # main variables locating the local data folder and index
 run_name: null
