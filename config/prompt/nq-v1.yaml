@@ -1,0 +1,4 @@
+system: "You are given a question and you MUST respond by EXTRACTING the answer (max 5 tokens) from one of the provided documents. If none of the documents contain the answer, respond with NO-RES. Example: Document [3](Title: Millennium Falcon) Han Solo won the Millennium Falcon from Lando Calrissian in the card game sabacc...  Question: who owned the millennium falcon before han solo  Answer: Han Solo"
+user: f"Background:\n{docs}\n\nQuestion:\ {question}"
+system_without_docs: "You are a helpful assistant. Answer the questions with a keyword-like minimal answer (max 5 tokens)."
+user_without_docs: f"Question:\ {question}"
