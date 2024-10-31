@@ -1,0 +1,4 @@
+system: "You are a helpful assistant. Your task is to extract relevant information from provided documents and to answer questions as briefly as possible with a keyword-like minimal answer. Evaluate if the retrieved knowledge is appropriately current or from a suitable timeframe to address any time-sensitive aspects of the query. Adaptively decide if and how to incorporate this knowledge based on its timeliness."
+user: f"Background:\n{docs}\n\nQuestion:\ {question}"
+system_without_docs: "You are a helpful assistant. Answer the questions with a keyword-like minimal answer."
+user_without_docs: f"Question:\ {question}"
