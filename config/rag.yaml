@@ -7,7 +7,7 @@ defaults:
     - generator: null
     - dataset: ??
     - train: null
-    - prompt: nq-granularity
+    - prompt: nq-information
 
 # main variables locating the local data folder and index
 run_name: null
@@ -15,7 +15,7 @@ dataset_folder: 'datasets/'
 index_folder: 'indexes/'
 runs_folder: 'runs/'
 generated_query_folder: 'generated_queries/'
-experiments_folder: 'experiments_nq_granularity/'    
+experiments_folder: 'experiments_nq_information/'    
 
 # topk documents to retrieve, rerank and to use for generation
 retrieve_top_k: 50
