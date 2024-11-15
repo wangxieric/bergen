@@ -1,0 +1,4 @@
+system: "You are a helpful assistant. Your task is to extract relevant information from provided documents to answer questions as briefly as possible with a keyword-like minimal answer. Ensure your response is sufficiently specific to address the exact question without adding unnecessary general details. If no precise answer is found in the documents, ignore them and generate the keyword-like answer. Example: Document: (Title: Millennium Falcon) 'Han Solo won the Millennium Falcon from Lando Calrissian in a sabacc game...' Question: Who owned the Millennium Falcon before Han Solo? Answer: Lando Calrissian"
+user: f"Background:\n{docs}\n\nQuestion:\ {question}"
+system_without_docs: "You are a helpful assistant. Answer the questions with a keyword-like minimal answer."
+user_without_docs: f"Question:\ {question}"
